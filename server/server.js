@@ -18,6 +18,8 @@ mongoose
   });
 
 const app = makeApp.makeapp();
+
+
 const server = app.listen(process.env.PORT, () =>
   console.log(`Server started on ${process.env.PORT}`)
 );
@@ -38,52 +40,50 @@ const offlineMessages = {};
 
 io.on("connection", (socket) => {
   global.chatSocket = socket;
-  console.log("user connected");
+  // console.log("user connected");
   // console.log(randomonlineUsers);
   socket.on("add-user", (userId) => {
-    console.log(userId);
+    // console.log(userId);
 
-    console.log(userId.userId);
+    // console.log(userId.userId);
     onlineUsers[userId.userId] = socket.id;
-    console.log(onlineUsers);
+    // console.log(onlineUsers);
 
     const messages = offlineMessages[userId.userId];
-    console.log(messages);
-    if (messages && messages.length > 0) {
-      socket.emit("offlineMessages", { ashishrajprashantshyam: messages });
-      delete offlineMessages[userId.userId];
-    }
+    // console.log(messages);
+    // if (messages && messages.length > 0) {
+    //   socket.emit("offlineMessages", { ashishrajprashantshyam: messages });
+    //   delete offlineMessages[userId.userId];
+    // }
     // console.log(onlineUsers);
   });
 
   socket.on("send-msg", (data) => {
-    console.log(data.to);
+    // console.log(data.to);
 
-    const sendUserSocket = onlineUsers[data.to];
+    // const sendUserSocket = onlineUsers[data.to];
 
-    console.log(data);
-    console.log(sendUserSocket);
+    // console.log(data);
+    // console.log(sendUserSocket);
 
     // console.log(sendUserSocket);
     // console.log(data.to);
-    if (sendUserSocket) {
-      socket
-        .to(sendUserSocket)
-        .emit("msg-recieve", {
-          message: data.message,
-          from: data.from,
-          to: data.to,
-        });
-    } else {
-      if (!offlineMessages[data.to]) {
-        offlineMessages[data.to] = [];
-      }
-      offlineMessages[data.to].push({
-        prashantrajprashantshyam: `"${data.from}"`,
-        shyamrajprashantshyam: `"${data.message}"`,
+    // if (sendUserSocket) {
+      socket.broadcast.emit("msg-recieve", {
+        message: data.message,
+        from: data.from,
+        to: data.to,
       });
-      console.log(offlineMessages[data.to]);
-    }
+    // } else {
+    //   if (!offlineMessages[data.to]) {
+    //     offlineMessages[data.to] = [];
+    //   }
+    //   offlineMessages[data.to].push({
+    //     prashantrajprashantshyam: `"${data.from}"`,
+    //     shyamrajprashantshyam: `"${data.message}"`,
+    //   });
+    //   console.log(offlineMessages[data.to]);
+    // }
   });
 
   let windowID = socket;
@@ -105,7 +105,7 @@ io.on("connection", (socket) => {
     //get index of randomly selected user from the available users list
     let selected = Math.floor(Math.random() * availableUsers.length);
     //store the user in Socket
-    // socket = availableUsers[selected];
+    let socketsel = availableUsers[selected];
 
     //remove the randomly selected user from the available users list
     availableUsers.splice(selected, 1);
@@ -119,12 +119,11 @@ io.on("connection", (socket) => {
     // socket.join(uID);
     // // emit the room id to the frontend side.
     // socket.emit('private ack', { "message": "Added to privateRoom", "roomID": uID });
-    socket.emit("ack", { id: socket.id, msg: "User connected" });
-    randomonlineUsers.push(socket);
+    // socket.emit("ack", { id: socket.id, msg: "User connected" });
+    // randomonlineUsers.push(socket);
 
-    socket.on("privateRoom", (data) => {
-      // console.log("ffff");
-    //   console.log(user);
+    socket.on("privateRoom", (user) => {
+      // console.log(user);
       let unfilledRooms = rooms.filter((room) => {
         if (!room.isFilled) {
           return room;
@@ -138,11 +137,8 @@ io.on("connection", (socket) => {
         let index = rooms.indexOf(unfilledRooms[0]);
         rooms[index].isFilled = true;
         unfilledRooms[0].isFilled = true;
-        unfilledRooms[0].user2 = data.user;
-        unfilledRooms[0].user2name = data.username;
-
-
-        console.log(rooms);
+        unfilledRooms[0].user2 = user;
+        // console.log(rooms);
         socket.emit("private ack", {
           message: "Added to privateRoom",
           roomID: unfilledRooms[0].roomID,
@@ -152,17 +148,15 @@ io.on("connection", (socket) => {
         io.sockets.in(socket.roomID).emit("strangerConnected", {
           message: "You are connected with a stranger!",
           user1: unfilledRooms[0].user1,
-          user2: data.user,
-          user1name: unfilledRooms[0].user1name,
-          user2name: data.username,
+          user2: user,
         });
       } catch (e) {
         // dont have unfilled rooms. Thus creating a new user.
         let uID = uniqueID();
-        rooms.push({ roomID: uID, isFilled: false, user1: data.user, user2: "",user1name:data.username,user2name:"" });
+        rooms.push({ roomID: uID, isFilled: false, user1: user, user2: "" });
         socket.join(uID);
         socket.roomID = uID;
-        console.log(rooms);
+        // console.log(rooms);
 
         socket.emit("private ack", {
           message: "Added to privateRoom",
@@ -172,14 +166,14 @@ io.on("connection", (socket) => {
       }
     });
   }
-  // socket.on("randomconnect",(data)=>{/
+  // socket.on("randomconnect", (data) => {
   asyncCall();
   // });
   // console.log("sdfrwsd");
 
   socket.on("sendMessage", (data) => {
     // let timeStamp = moment().format("LT");
-    console.log(data);
+    // console.log(data);
     io.sockets.in(data.room_id).emit("newMessage", {
       message: data.message,
       senderId: data.from,
@@ -189,7 +183,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendrequest", (data) => {
-    console.log(data);
+    // console.log(data);
     io.sockets.in(data.room).emit("receiverequest", {
       sendersocketId: windowID.id,
       senderid: data.from,
@@ -209,7 +203,8 @@ io.on("connection", (socket) => {
   });
 
   // Disconnect the user
-  socket.on("disconnect1", () => {
+  socket.on("disconnectRandom", (data) => {
+    // console.log("yes");
     let index = randomonlineUsers.indexOf(socket);
     randomonlineUsers.splice(index, 1);
     index = rooms.findIndex((x) => x.roomID == windowID.roomID);
@@ -219,9 +214,11 @@ io.on("connection", (socket) => {
           title: "Stranger is disconnected!",
           message: "Please click on 'New' button to connect to someone else.",
         };
-        io.sockets
-          .in(windowID.roomID)
-          .emit("alone", { warning: warning, roomID: windowID.roomID });
+        io.sockets.in(windowID.roomID).emit("alone", {
+          warning: warning,
+          roomID: windowID.roomID,
+          randomid: data.userid,
+        });
         rooms.splice(index, 1);
       } else {
         rooms.splice(index, 1);
@@ -229,4 +226,52 @@ io.on("connection", (socket) => {
     }
   });
 });
-// app.listen(5000, () => console.log("listening on port 8080"));
+// // user1 =  User.
+// run1();
+
+//  async function run1 () {
+//   // console.log(req.body);
+//     try {
+//       const username="raj12345";
+//       const email="raj12345";
+//       const password="raj12345678";
+//       const gender="female";
+
+//       const user = await User.create({
+//         email,
+//         username,
+//         gender,
+//         password,
+//         // password: hashedPassword,
+//       });
+//   console.log(user);
+
+//       // delete user.password;
+//       // return res.json({ status: true, user });
+//     } catch (ex) {
+//       console.log(ex);
+//       // next(ex);
+//     }
+// };
+// const io = socket(server, {
+//   cors: {
+//     origin: "http://localhost:3000",
+//     credentials: true,
+//   },
+// });
+
+// global.onlineUsers = new Map();
+// io.on("connection", (socket) => {
+//   global.chatSocket = socket;
+//   socket.on("add-user", (userId) => {
+//     onlineUsers.set(userId, socket.id);
+//   });
+
+//   socket.on("send-msg", (data) => {
+//     const sendUserSocket = onlineUsers.get(data.to);
+//     if (sendUserSocket) {
+//       socket.to(sendUserSocket).emit("msg-recieve", data.msg);
+//     }
+//   });
+// });
+

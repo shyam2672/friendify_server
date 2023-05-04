@@ -65,7 +65,7 @@ console.log(id);
   
     const response = await request(server)
       .post("/api/auth/rateuser")
-      .set("Authorization", `Bearer ${token}`)
+      // .set("Authorization", `Bearer ${token}`)
       .send(userData);
     console.log(response._body);
 

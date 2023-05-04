@@ -73,7 +73,7 @@ describe("friends api check", () => {
       .send(userData);
     // console.log(response._body);
 
-    token2 = response._body.user.token;
+    // token2 = response._body.user.token;
     id2 = response._body.user._id;
     // console.log(token);
     // console.log(id);
@@ -93,7 +93,7 @@ describe("friends api check", () => {
 
     const response = await request(server)
       .post("/api/auth/addfriend")
-      .set("Authorization", `Bearer ${token1}`)
+      // .set("Authorization", `Bearer ${token1}`)
       .send(userData);
     // console.log(response._body);
 
@@ -112,7 +112,7 @@ describe("friends api check", () => {
 
     const response = await request(server)
       .post("/api/auth/addfriend")
-      .set("Authorization", `Bearer ${token1}`)
+      // .set("Authorization", `Bearer ${token1}`)
       .send(userData);
     // console.log(response._body.message);
 
@@ -130,7 +130,7 @@ describe("friends api check", () => {
 
     const response = await request(server)
       .post("/api/auth/friends")
-      .set("Authorization", `Bearer ${token1}`)
+      // .set("Authorization", `Bearer ${token1}`)
       .send(userData);
     // console.log(response._body);
 
@@ -152,7 +152,7 @@ describe("friends api check", () => {
 
     const response = await request(server)
       .post("/api/auth/deletefriend")
-      .set("Authorization", `Bearer ${token1}`)
+      // .set("Authorization", `Bearer ${token1}`)
       .send(userData);
     // console.log("fsd");
     // console.log(response._body);

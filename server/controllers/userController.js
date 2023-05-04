@@ -73,21 +73,18 @@ module.exports.register = async (req, res, next) => {
     // console.log("here");
     let user;
     try {
-    
-     user = await User.create({
-      email,
-      username,
-      gender,
-      password: hashedPassword,
-      avatarImage,
-    })
+      user = await User.create({
+        email,
+        username,
+        gender,
+        isVerified: true,
+        password: hashedPassword,
+        avatarImage,
+      });
       // console.log('User created:', user);
     } catch (error) {
-      console.error('Error creating user:', error);
-      
+      console.error("Error creating user:", error);
     }
-    
-   
 
     // console.log(user);
 
@@ -112,13 +109,12 @@ module.exports.register = async (req, res, next) => {
     // });
     user.token = generateToken(user._id);
     delete user.password;
-    return res.json({ status: true,user: user });
+    return res.json({ status: true, user: user });
   } catch (ex) {
     // console.log(ex);
     next(ex);
   }
 };
-
 
 module.exports.deletefriend = async (req, res, next) => {
   try {
@@ -128,30 +124,30 @@ module.exports.deletefriend = async (req, res, next) => {
     const friendid = req.body.friendid;
     // const user=user.findOne({receiver});
     let user;
-    try{
-      user=await User.updateOne({ _id: req.body.id }, { $pull: { friends: friendid} });
-
-    }
-    catch(error){
+    try {
+      user = await User.updateOne(
+        { _id: req.body.id },
+        { $pull: { friends: friendid } }
+      );
+    } catch (error) {
       console.log(error);
     }
 
-    try{
-      user=await User.updateOne({ _id: friendid }, { $pull: { friends: req.body.id} });
-
-    }
-    catch(error){
+    try {
+      user = await User.updateOne(
+        { _id: friendid },
+        { $pull: { friends: req.body.id } }
+      );
+    } catch (error) {
       console.log(error);
     }
 
     // console.log(user);
-
-   
 
     // console.log(user);
     // console.log("dsgdf");
 
-    return res.json({status:true });
+    return res.json({ status: true });
 
     // const request=friendrequests.create({sender,receiver});
   } catch (ex) {
@@ -271,7 +267,7 @@ module.exports.rateuser = async (req, res, next) => {
       { new: true }
     );
     // console.log(userupdated);
-    return res.json({status:true,user:userupdated});
+    return res.json({ status: true, user: userupdated });
   } catch (ex) {
     next(ex);
   }
@@ -291,7 +287,7 @@ module.exports.getrating = async (req, res, next) => {
 module.exports.getfriends = async (req, res, next) => {
   try {
     // const user = await User.find({ _id:  req.params.id  });
-    console.log('here');
+    console.log("here");
     const userid = req.body.id;
     console.log(userid);
     const user = await User.findById(userid);
@@ -349,7 +345,8 @@ module.exports.setrandomusername = async (req, res, next) => {
     );
     console.log(userData);
     return res.json({
-      random_username: userData.random_username,status:true
+      random_username: userData.random_username,
+      status: true,
     });
   } catch (ex) {
     next(ex);
