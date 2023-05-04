@@ -32,6 +32,8 @@ module.exports.login = async (req, res, next) => {
       return res.json({ msg: "Incorrect Username or Password", status: false });
     // if (user.isVerified == false)
     //   return res.json({ msg: "Email not verified", status: false });
+    user.token = generateToken(user._id);
+
     delete user.password;
     return res.json({ status: true, user });
   } catch (ex) {
@@ -289,8 +291,9 @@ module.exports.getrating = async (req, res, next) => {
 module.exports.getfriends = async (req, res, next) => {
   try {
     // const user = await User.find({ _id:  req.params.id  });
+    console.log('here');
     const userid = req.body.id;
-    // console.log(userid);
+    console.log(userid);
     const user = await User.findById(userid);
 
     const userfriendsids = user.friends;
@@ -301,7 +304,7 @@ module.exports.getfriends = async (req, res, next) => {
     }
 
     // res.json(users);
-    // console.log(friends);
+    console.log(friends);
     return res.json(friends);
   } catch (ex) {
     next(ex);
@@ -335,7 +338,7 @@ module.exports.setrandomusername = async (req, res, next) => {
   try {
     const userId = req.body.id;
     const random_username = req.body.random_username;
-    // console.log(random_username);
+    console.log(random_username);
     // console.log(userId);
     const userData = await User.findByIdAndUpdate(
       userId,
@@ -344,7 +347,7 @@ module.exports.setrandomusername = async (req, res, next) => {
       },
       { new: true }
     );
-    // console.log(userData);
+    console.log(userData);
     return res.json({
       random_username: userData.random_username,status:true
     });

@@ -122,9 +122,9 @@ io.on("connection", (socket) => {
     socket.emit("ack", { id: socket.id, msg: "User connected" });
     randomonlineUsers.push(socket);
 
-    socket.on("privateRoom", (user) => {
+    socket.on("privateRoom", (data) => {
       // console.log("ffff");
-      console.log(user);
+    //   console.log(user);
       let unfilledRooms = rooms.filter((room) => {
         if (!room.isFilled) {
           return room;
@@ -138,7 +138,10 @@ io.on("connection", (socket) => {
         let index = rooms.indexOf(unfilledRooms[0]);
         rooms[index].isFilled = true;
         unfilledRooms[0].isFilled = true;
-        unfilledRooms[0].user2 = user;
+        unfilledRooms[0].user2 = data.user;
+        unfilledRooms[0].user2name = data.username;
+
+
         console.log(rooms);
         socket.emit("private ack", {
           message: "Added to privateRoom",
@@ -149,12 +152,14 @@ io.on("connection", (socket) => {
         io.sockets.in(socket.roomID).emit("strangerConnected", {
           message: "You are connected with a stranger!",
           user1: unfilledRooms[0].user1,
-          user2: user,
+          user2: data.user,
+          user1name: unfilledRooms[0].user1name,
+          user2name: data.username,
         });
       } catch (e) {
         // dont have unfilled rooms. Thus creating a new user.
         let uID = uniqueID();
-        rooms.push({ roomID: uID, isFilled: false, user1: user, user2: "" });
+        rooms.push({ roomID: uID, isFilled: false, user1: data.user, user2: "",user1name:data.username,user2name:"" });
         socket.join(uID);
         socket.roomID = uID;
         console.log(rooms);
